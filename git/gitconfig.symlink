@@ -4,7 +4,9 @@
 [hub]
         protocol = https
 [alias]
+	fp = push --force-with-lease
         co = checkout
+	unstage = reset HEAD
         promote = !$ZSH/bin/git-promote
         wtf     = !$ZSH/bin/git-wtf
         rank-contributors = !$ZSH/bin/git-rank-contributors
