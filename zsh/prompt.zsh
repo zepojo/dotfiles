@@ -2,6 +2,20 @@ autoload colors && colors
 # cheers, @ehrenmurdick
 # http://github.com/ehrenmurdick/config/blob/master/zsh/prompt.zsh
 
+if [[ $TERM = *256color* || $TERM = *rxvt* ]]; then
+  turquoise="%F{81}"
+  orange="%F{166}"
+  purple="%F{135}"
+  hotpink="%F{161}"
+  limegreen="%F{118}"
+else
+  turquoise="$fg[cyan]"
+  orange="$fg[yellow]"
+  purple="$fg[magenta]"
+  hotpink="$fg[red]"
+  limegreen="$fg[green]"
+fi
+
 if (( $+commands[git] ))
 then
   git="$commands[git]"
@@ -10,7 +24,7 @@ else
 fi
 
 git_branch() {
-  echo $($git symbolic-ref HEAD 2>/dev/null | awk -F/ {'print $NF'})
+  echo "%{$hotpink%}$($git symbolic-ref HEAD 2>/dev/null | awk -F/ {'print $NF'})%{$reset_color%}"
 }
 
 git_dirty() {
@@ -45,7 +59,7 @@ need_push () {
     then
       echo " "
     else
-      echo " with %{$fg_bold[magenta]%}$number unpushed%{$reset_color%}"
+      echo " %{$fg_bold[magenta]%}•%{$reset_color%} "
     fi
   fi
 }
@@ -66,7 +80,12 @@ battery_status() {
   fi
 }
 
-export PROMPT=$'\n$(battery_status)in $(directory_name) $(git_dirty)$(need_push)\n› '
+current_time() {
+  echo "%{$fg_bold[yellow]%}(%D{%H:%M})%{$reset_color%}"
+}
+
+export PROMPT=$'\n$(current_time) in $(directory_name) $(git_dirty)$(need_push)\n› '
+
 set_prompt () {
   export RPROMPT="%{$fg_bold[cyan]%}%{$reset_color%}"
 }
@@ -74,4 +93,9 @@ set_prompt () {
 precmd() {
   title "zsh" "%m" "%55<...<%~"
   set_prompt
+}
+
+TMOUT=60
+TRAPALRM() {
+  zle reset-prompt
 }
